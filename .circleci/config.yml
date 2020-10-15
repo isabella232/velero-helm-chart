@@ -19,4 +19,4 @@ workflows:
                         branches:
                             ignore: /.*/
                         tags:
-                            only: /chart\/velero\/\d+.\d+.\d+(-.*)?/s
+                            only: /chart\/velero\/\d+.\d+.\d+(-.*)?/
