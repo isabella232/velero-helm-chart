@@ -1,5 +1,6 @@
 {{- if .Values.configuration.provider -}}
 {{- $provider := .Values.configuration.provider -}}
+{{- $pvprovider := .Values.configuration.volumeSnapshotLocation.provider -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -117,18 +118,37 @@ spec:
             - name: LD_LIBRARY_PATH
               value: /plugins
           {{- if .Values.credentials.useSecret }}
-            {{- if eq $provider "aws" }}
+            {{- if or (eq $provider "aws") (eq $pvprovider "aws") }}
             - name: AWS_SHARED_CREDENTIALS_FILE
+              {{- if eq $provider "aws" }}
               value: /credentials/cloud
-            {{- else if eq $provider "gcp"}}
+              {{- else }}
+              value: /credentials/cluster
+              {{- end }}
+           {{- end }}
+           {{- if or (eq $provider "gcp") (eq $pvprovider "gcp") }}
             - name: GOOGLE_APPLICATION_CREDENTIALS
+              {{- if eq $provider "gcp" }}
               value: /credentials/cloud
-            {{- else if eq $provider "azure" }}
+              {{- else }}
+              value: /credentials/cluster
+              {{- end }}
+            {{- end }}
+            {{- if or (eq $provider "azure") (eq $pvprovider "azure") }}
             - name: AZURE_CREDENTIALS_FILE
+              {{- if eq $provider "azure" }}
               value: /credentials/cloud
-            {{- else if eq $provider "alibabacloud" }}
+              {{- else }}
+              value: /credentials/cluster
+              {{- end }}
+            {{- end }}
+            {{- if or (eq $provider "alibabacloud") (eq $pvprovider "alibabacloud") }}
             - name: ALIBABA_CLOUD_CREDENTIALS_FILE
+              {{- if eq $provider "alibabacloud" }}
               value: /credentials/cloud
+              {{- else }}
+              value: /credentials/cluster
+              {{- end }}
             {{- end }}
           {{- end }}
           {{- with .Values.configuration.extraEnvVars }}
